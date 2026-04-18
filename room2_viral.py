@@ -1,8 +1,8 @@
 # ==========================================
 # 文件名: room2_viral.py (功能预约占位版)
 # ==========================================
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QFrame
-from PyQt6.QtCore import Qt
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QFrame
+from PySide6.QtCore import Qt
 
 class ViralQuotesView(QWidget):
     def __init__(self, parent=None):

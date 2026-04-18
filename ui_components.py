@@ -5,8 +5,8 @@ import math
 import subprocess
 import os
 import re
-from PyQt6.QtWidgets import QWidget, QVBoxLayout
-from PyQt6.QtCore import Qt, QObject, pyqtSlot
+from PySide6.QtWidgets import QWidget, QVBoxLayout
+from PySide6.QtCore import Qt, QObject, Slot
 
 from core import get_ffmpeg_cmd
 
@@ -76,7 +76,7 @@ class WebBridge(QObject):
         super().__init__()
         self.controller = parent_controller
         
-    @pyqtSlot(int, float, float)
+    @Slot(int, float, float)
     def update_coordinates(self, idx, x, y):
         if 0 <= idx < len(self.controller.state["subs_data"]):
             current_clip = self.controller.state["subs_data"][idx]
@@ -101,7 +101,7 @@ class WebBridge(QObject):
             self.controller.update_floating_subtitle()
             self.controller.auto_save_cache() 
             
-    @pyqtSlot(int, float)
+    @Slot(int, float)
     def update_box_width(self, idx, width):
         if 0 <= idx < len(self.controller.state["subs_data"]):
             current_clip = self.controller.state["subs_data"][idx]
@@ -122,16 +122,16 @@ class WebBridge(QObject):
             self.controller.update_floating_subtitle()
             self.controller.auto_save_cache()
 
-    @pyqtSlot(int)
+    @Slot(int)
     def notify_selected(self, idx): 
         self.controller.current_selected_idx = idx
         self.controller.switch_inspector("sub")
         
-    @pyqtSlot(int, str)
+    @Slot(int, str)
     def update_text_from_screen(self, idx, new_text):
         pass
             
-    @pyqtSlot(int, int)
+    @Slot(int, int)
     def adjust_font_size(self, idx, delta):
         if 0 <= idx < len(self.controller.state["subs_data"]):
             current_clip = self.controller.state["subs_data"][idx]

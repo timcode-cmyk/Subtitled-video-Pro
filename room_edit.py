@@ -14,19 +14,19 @@ import zipfile
 import sys
 import copy
 
-from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
                              QLabel, QTextEdit, QScrollArea, QTabWidget, QComboBox, 
                              QSlider, QFileDialog, QGridLayout, QFrame, 
                              QCheckBox, QMessageBox, QColorDialog, QFontComboBox, 
                              QStackedWidget, QDoubleSpinBox, QSpinBox, QSplitter, QInputDialog, QProgressDialog, QLineEdit, QSizePolicy)
-from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtWebEngineCore import QWebEngineSettings
-from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput, QVideoSink, QVideoFrame
-from PyQt6.QtCore import Qt, QUrl, QTimer, pyqtSlot, pyqtSignal, QLocale, QEvent, QObject, QSize
-from PyQt6.QtGui import QPainter, QPixmap, QKeySequence, QShortcut, QIcon
-from PyQt6.QtWebChannel import QWebChannel
-from PyQt6.QtGui import QColor, QFont
-from PyQt6.QtCore import QRectF
+from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtWebEngineCore import QWebEngineSettings
+from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput, QVideoSink, QVideoFrame
+from PySide6.QtCore import Qt, QUrl, QTimer, Slot, Signal, QLocale, QEvent, QObject, QSize
+from PySide6.QtGui import QPainter, QPixmap, QKeySequence, QShortcut, QIcon
+from PySide6.QtWebChannel import QWebChannel
+from PySide6.QtGui import QColor, QFont
+from PySide6.QtCore import QRectF
 
 from timeline_engine import TimelineHeader, AdvancedTimeline
 from core import get_ffmpeg_cmd, get_app_dir
@@ -220,7 +220,7 @@ class WebBridge(QObject):
         super().__init__()
         self.controller = parent_controller
         
-    @pyqtSlot(int, float, float)
+    @Slot(int, float, float)
     def update_coordinates(self, idx, x, y):
         if 0 <= idx < len(self.controller.state["subs_data"]):
             current_clip = self.controller.state["subs_data"][idx]
@@ -246,7 +246,7 @@ class WebBridge(QObject):
             self.controller.auto_save_cache() 
             self.controller.push_history()
             
-    @pyqtSlot(int, float)
+    @Slot(int, float)
     def update_box_width(self, idx, width):
         if 0 <= idx < len(self.controller.state["subs_data"]):
             current_clip = self.controller.state["subs_data"][idx]
@@ -268,18 +268,18 @@ class WebBridge(QObject):
             self.controller.auto_save_cache()
             self.controller.push_history()
 
-    @pyqtSlot(int)
+    @Slot(int)
     def notify_selected(self, idx): 
         self.controller.current_selected_idx = idx
         self.controller.switch_inspector("sub")
         
-    @pyqtSlot(int, str)
+    @Slot(int, str)
     def update_text_from_screen(self, idx, new_text):
         if 0 <= idx < len(self.controller.state["subs_data"]):
             self.controller.sync_text_edit(idx, new_text)
             self.controller.push_history()
             
-    @pyqtSlot(int, int)
+    @Slot(int, int)
     def adjust_font_size(self, idx, delta):
         if 0 <= idx < len(self.controller.state["subs_data"]):
             current_clip = self.controller.state["subs_data"][idx]
@@ -302,10 +302,10 @@ class WebBridge(QObject):
             self.controller.push_history()
 
 class EditView(QWidget):
-    sig_ai_progress = pyqtSignal(str)
-    sig_ai_success = pyqtSignal()
-    sig_ai_error = pyqtSignal(str)
-    sig_ai_finish = pyqtSignal()
+    sig_ai_progress = Signal(str)
+    sig_ai_success = Signal()
+    sig_ai_error = Signal(str)
+    sig_ai_finish = Signal()
 
     def __init__(self, project_data=None, parent=None):
         super().__init__(parent)
@@ -1721,7 +1721,7 @@ class EditView(QWidget):
         dur2 = get_exact_duration(self.state.get("audio_path")) if self.state.get("audio_path") else 0
         self.state["duration"] = max(dur1, dur2); self.update_timeline_size()
 
-    @pyqtSlot(QVideoFrame)
+    @Slot(QVideoFrame)
     def on_video_frame(self, frame):
         if frame.isValid() and not frame.toImage().isNull():
             img = frame.toImage(); w, h = self.video_label.width(), self.video_label.height()
@@ -1794,20 +1794,20 @@ class EditView(QWidget):
             s.setdefault("words", [{"text": s.get('text', ''), "start": s.get('start', 0.0), "end": s.get('end', 1.0)}])
         return data
         
-    @pyqtSlot(str)
+    @Slot(str)
     def _on_ai_progress(self, msg): self.status_lbl.setText(msg)
 
-    @pyqtSlot()
+    @Slot()
     def _on_ai_success(self):
         self.update_timeline_size(); self.render_ui_list(); self.status_lbl.setText("✅ 打轴完毕！"); self.auto_save_cache()
         self.push_history()
         QMessageBox.information(self, "🎉 成功", "AI 听译打轴完美完成！\n已自动为您生成所有字幕片段！")
 
-    @pyqtSlot(str)
+    @Slot(str)
     def _on_ai_error(self, msg):
         self.status_lbl.setText("❌ 打轴失败"); QMessageBox.critical(self, "AI 听译失败", f"提取失败！原因如下：\n\n{msg}")
 
-    @pyqtSlot()
+    @Slot()
     def _on_ai_finish(self): 
         self.btn_extract.setEnabled(True)
 

@@ -3,7 +3,7 @@
 # ==========================================
 import os
 import json
-from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QLabel, 
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, 
                              QTextEdit, QPushButton, QMessageBox, QFrame)
 
 CONFIG_FILE = os.path.join(os.getcwd(), "settings.json")

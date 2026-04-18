@@ -1,9 +1,9 @@
 # ==========================================
 # 文件名: timeline_engine.py (无损升级版：6轨道平铺引擎)
 # ==========================================
-from PyQt6.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsRectItem, QGraphicsItem, QWidget
-from PyQt6.QtCore import Qt, QRectF, QObject, pyqtSignal, pyqtSlot, QPointF
-from PyQt6.QtGui import QBrush, QColor, QPen, QPainter, QFont
+from PySide6.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsRectItem, QGraphicsItem, QWidget
+from PySide6.QtCore import Qt, QRectF, QObject, Signal, Slot, QPointF
+from PySide6.QtGui import QBrush, QColor, QPen, QPainter, QFont
 import os
 
 TRACK_H = 35
@@ -38,9 +38,9 @@ class TimelineHeader(QWidget):
         elif HEADER_H + self.TRACK_H * 2 <= y < HEADER_H + self.TRACK_H * 3: self.controller.select_entire_track("sub", 2) 
 
 class ClipSignals(QObject):
-    clicked = pyqtSignal(str, int) 
-    moved = pyqtSignal(str, int, float, float, int)
-    drag_finished = pyqtSignal(str, int, float)
+    clicked = Signal(str, int) 
+    moved = Signal(str, int, float, float, int)
+    drag_finished = Signal(str, int, float)
 
 class ClipItem(QGraphicsRectItem):
     def __init__(self, clip_type, idx, start_t, end_t, track_idx, pps, text="", media_dur=0):
@@ -188,13 +188,13 @@ class AdvancedTimeline(QGraphicsView):
         pps = self.controller.zoom_factor; self.playhead.setPos(time_sec * pps, 0); view_width = self.viewport().width(); head_x = time_sec * pps; scroll_bar = self.horizontalScrollBar()
         if head_x > scroll_bar.value() + view_width - 50: scroll_bar.setValue(int(head_x - view_width + 100))
 
-    @pyqtSlot(str, int)
+    @Slot(str, int)
     def on_clip_clicked(self, clip_type, idx):
         if clip_type == "sub": self.controller.current_selected_idx = idx
         elif clip_type == "video": self.controller.current_v_idx = idx
         self.controller.switch_inspector(clip_type)
 
-    @pyqtSlot(str, int, float, float, int)
+    @Slot(str, int, float, float, int)
     def on_clip_moved(self, clip_type, idx, new_start, new_end, new_track):
         if clip_type == "sub":
             sub = self.controller.state["subs_data"][idx]
@@ -226,7 +226,7 @@ class AdvancedTimeline(QGraphicsView):
         elif clip_type == "audio":
             self.controller.state["a_trim"] = [new_start, new_end]
 
-    @pyqtSlot(str, int, float)
+    @Slot(str, int, float)
     def on_clip_drag_finished(self, clip_type, idx, final_start):
         self.controller.update_timeline_size()
         self.controller.auto_save_cache()

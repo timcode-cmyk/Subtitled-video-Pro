@@ -4,18 +4,18 @@
 import os
 import shutil
 
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QListWidget, QListWidgetItem,
     QMessageBox, QFrame, QScrollArea, QGridLayout, QInputDialog, QGraphicsDropShadowEffect, QSplitter
 )
-from PyQt6.QtCore import Qt, pyqtSignal, QSize
-from PyQt6.QtGui import QPixmap, QCursor, QFont, QIcon
+from PySide6.QtCore import Qt, Signal, QSize
+from PySide6.QtGui import QPixmap, QCursor, QFont, QIcon
 
 from project_io import create_reel, load_project, get_project_folders, get_reels_in_folder
 
 class ReelCard(QFrame):
-    clicked = pyqtSignal(str) 
-    delete_clicked = pyqtSignal(str)
+    clicked = Signal(str) 
+    delete_clicked = Signal(str)
 
     def __init__(self, project_data, parent=None):
         super().__init__(parent)

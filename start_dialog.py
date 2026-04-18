@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QPushButton, QFileDialog
 )
 from project_io import create_project, load_project

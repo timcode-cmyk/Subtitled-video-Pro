@@ -8,11 +8,11 @@ import re
 import threading
 import subprocess
 import shutil
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
     QLabel, QFrame, QProgressBar, QTextEdit, QFileDialog, QMessageBox, QDoubleSpinBox
 )
-from PyQt6.QtCore import QProcess, QTimer
+from PySide6.QtCore import QProcess, QTimer
 from core import get_ffmpeg_cmd
 from playwright.sync_api import sync_playwright
 

@@ -1,0 +1,3 @@
+Requests
+PySide6
+playwright

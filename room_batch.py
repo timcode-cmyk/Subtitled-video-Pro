@@ -11,10 +11,10 @@ import re
 import shutil
 import csv
 import io
-from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
                              QLabel, QFrame, QProgressBar, QTextEdit, QFileDialog, 
                              QMessageBox, QComboBox, QTabWidget, QScrollArea, QLineEdit, QDialog)
-from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot, QTimer
+from PySide6.QtCore import Qt, Signal, Slot, QTimer
 from playwright.sync_api import sync_playwright
 
 from core import get_ffmpeg_cmd
@@ -109,11 +109,11 @@ class BatchTaskRow(QFrame):
             self.btn_aud.setStyleSheet("background-color: #a6e3a1; color: #11111b; font-weight: bold; border-radius: 4px;")
 
 class BatchView(QWidget):
-    sig_log = pyqtSignal(str, str)
-    sig_progress = pyqtSignal(int)
-    sig_file_done = pyqtSignal()
-    sig_all_done = pyqtSignal()
-    sig_table_row_status = pyqtSignal(int, str, str) 
+    sig_log = Signal(str, str)
+    sig_progress = Signal(int)
+    sig_file_done = Signal()
+    sig_all_done = Signal()
+    sig_table_row_status = Signal(int, str, str) 
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -348,16 +348,16 @@ class BatchView(QWidget):
         d = QFileDialog.getExistingDirectory(self, "选择成品保存文件夹")
         if d: self.output_dir = d; self.lbl_output.setText(f"当前输出路径: {d}")
 
-    @pyqtSlot(str, str)
+    @Slot(str, str)
     def _append_log(self, msg, color):
         self.log_console.append(f"<span style='color:{color}'>{msg}</span>")
         self.log_console.verticalScrollBar().setValue(self.log_console.verticalScrollBar().maximum())
 
-    @pyqtSlot(int)
+    @Slot(int)
     def _update_progress(self, val):
         self.progress_bar.setValue(val)
         
-    @pyqtSlot(int, str, str)
+    @Slot(int, str, str)
     def _update_table_row_status(self, idx, text, color):
         if self.tabs.currentIndex() == 0:
             if idx < self.table_layout.count():
@@ -704,12 +704,12 @@ class BatchView(QWidget):
             
         return subs
 
-    @pyqtSlot()
+    @Slot()
     def _on_file_done(self):
         self.current_idx += 1
         self.process_next()
 
-    @pyqtSlot()
+    @Slot()
     def _on_all_done(self):
         self.is_running = False
         btn_start_table = self.findChild(QPushButton, "🚀 开始批量流水线")
